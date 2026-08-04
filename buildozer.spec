@@ -39,7 +39,7 @@ android.ndk = 25b
 android.build_tools_version = 33.0.2
 
 # (str) The Android arch to build for
-android.archs = arm64-v8a, armeabi-v7a
+android.archs = arm64-v8a
 
 # (bool) Accept SDK licenses automatically
 android.accept_sdk_license = True
