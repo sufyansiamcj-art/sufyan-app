@@ -20,7 +20,8 @@ version = 0.1
 
 # (list) Application requirements
 # ملاحظة: إذا كان كودك يستخدم مكتبات إضافية مثل requests لجلب مواقيت الصلاة أضفها هنا
-requirements = python3,kivy
+# حدد إصدار python3 و cython صراحة لمنع جلب إصدارات غير مستقرة
+requirements = python3==3.11.5,kivy,cython==0.29.33,requests,adhanpy,flet
 
 # (list) Permissions
 android.permissions = INTERNET
