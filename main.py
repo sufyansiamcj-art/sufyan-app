@@ -62,7 +62,7 @@ def set_do_not_disturb(enable: bool):
                 nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
     except Exception:
         # وضع محاكاة للتجربة على الكمبيوتر (Desktop Test Mode)
-        state_str = "تفعيل [وضع عدم الإزعاج]" if enable else "إلغاء [وضع عدم الإزعاج]"
+        state_str = "تفعيل [وضع عدم  الإزعاج]" if enable else "إلغاء [وضع عدم الإزعاج]"
         print(f"[محاكاة النظام]: تم {state_str}")
 
 
