@@ -19,29 +19,34 @@ source.include_exts = py,png,jpg,kv,atlas,json
 version = 0.1
 
 # (list) Application requirements
-# أضف هنا المكتبات التي يستخدمها تطبيقك تفصل بينها فاصلة
+# ملاحظة: إذا كان كودك يستخدم مكتبات إضافية مثل requests لجلب مواقيت الصلاة أضفها هنا
 requirements = python3,kivy
 
-# (str) Custom source code for main.py
-# main.filename = main.py
-
 # (list) Permissions
-# أضف الصلاحيات إذا كان تطبيقك يحتاج الإنترنت مثلاً
 android.permissions = INTERNET
 
-# (int) Target Android API, should be as high as possible.
+# (int) Target Android API
 android.api = 33
 
-# (int) Minimum API your APK will support.
+# (int) Minimum API supported
 android.minapi = 21
+
+# (str) Android NDK version to use (إصدار مستقر)
+android.ndk = 25b
+
+# (str) Android Build Tools version to use (يمنع أخطاء إصدار 37)
+android.build_tools_version = 33.0.2
 
 # (str) The Android arch to build for
 android.archs = arm64-v8a, armeabi-v7a
 
+# (bool) Accept SDK licenses automatically
+android.accept_sdk_license = True
+
 [buildozer]
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with output from commands))
+# (int) Log level (0 = error only, 1 = info, 2 = debug)
 log_level = 2
 
-# (int) Display warning if buildozer is run as root (0 = ignore, 1 = warn, 2 = error)
+# (int) Display warning if buildozer is run as root
 warn_on_root = 1
