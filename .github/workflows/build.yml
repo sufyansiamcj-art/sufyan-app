@@ -7,34 +7,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Build APK with Buildozer Action
+      uses: ArtemSundaev/buildozer-action@v1
       with:
-        python-version: '3.11'
-
-    - name: Install System Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
-        pip install --upgrade pip setuptools
-        pip install "cython==0.29.33" buildozer
-
-    - name: Build APK with Buildozer
-      run: |
-        # الموافقة المسبقة على جميع الرخص بدون استخدام أمر yes المفاجئ
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
-        
-        # تشغيل البناء بشكل طبيعي مع قبول الرخص تلقائياً
-        buildozer -v android debug
-      env:
-        ACCEPT_BUILD_TOOLS_CHECKSUM: "true"
+        workdir: .
+        buildozer_version: master
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
