@@ -1,6 +1,6 @@
 [app]
 
-# (string) Title of your application
+# (string)  Title of your application
 title = Sakina Prayer App
 
 # (string) Package name
