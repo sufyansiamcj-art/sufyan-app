@@ -256,11 +256,11 @@ def main(page: ft.Page):
             padding=15,
             content=ft.Column([
                 next_prayer_container,
-                ft.SizedBox(height=5),
+                ft.Container(height=5),
                 ft.Row([lat_input, lon_input]),
                 location_label,
                 ft.Row([btn_calc, btn_toggle], alignment=ft.MainAxisAlignment.SPACE_EVENLY),
-                ft.SizedBox(height=5),
+                ft.Container(height=5),
                 ft.Container(content=status_text, padding=10, bgcolor=ft.Colors.GREY_100, border_radius=8),
                 ft.Text("مواقيت الصلاة لليوم:", size=16, weight=ft.FontWeight.BOLD),
                 times_list
