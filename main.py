@@ -79,13 +79,11 @@ def main(page: ft.Page):
     page.title = "سكينة - وضع الصلاة الذكي"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
-    page.rtl = True  # ضبط الاتجاه من اليمين لليسار
+    page.rtl = True
     
-    # الإعدادات الافتراضية
     dnd_duration_mins = 25
     is_monitoring = False
 
-    # عناصر التحكم الرئيسية
     lat_input = ft.TextField(label="خط العرض (Lat)", value="32.8908", expand=True, border_radius=10)
     lon_input = ft.TextField(label="خط الطول (Lon)", value="13.1796", expand=True, border_radius=10)
     location_label = ft.Text("الموقع: Tripoli, Libya", size=13, color=ft.Colors.GREY_600, weight=ft.FontWeight.W_500)
@@ -119,7 +117,6 @@ def main(page: ft.Page):
                     next_found = True
                     diff_mins = int((p_dt - now).total_seconds() // 60)
                     
-                    # بطاقة الصلاة القادمة الأنيقة
                     next_prayer_container.content = ft.Row(
                         [
                             ft.Column(
@@ -138,14 +135,14 @@ def main(page: ft.Page):
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,
                                 ),
-                                bg_color=ft.Colors.WHITE12,
+                                bgcolor=ft.Colors.WHITE12,
                                 padding=10,
                                 border_radius=10,
                             )
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                     )
-                    next_prayer_container.bg_color = ft.Colors.INDIGO_700
+                    next_prayer_container.bgcolor = ft.Colors.INDIGO_700
 
                 times_list.controls.append(
                     ft.Container(
@@ -162,7 +159,7 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                         ),
                         padding=15,
-                        bg_color=ft.Colors.INDIGO_50 if is_next else ft.Colors.WHITE,
+                        bgcolor=ft.Colors.INDIGO_50 if is_next else ft.Colors.WHITE,
                         border_radius=12,
                         border=ft.border.all(1, ft.Colors.INDIGO_200 if is_next else ft.Colors.GREY_200)
                     )
@@ -218,12 +215,10 @@ def main(page: ft.Page):
             update_status("تم إيقاف المراقبة", ft.Colors.ORANGE_800)
         page.update()
 
-    # الأزرار
     btn_calc = ft.OutlinedButton("تحديث المواقيت", icon=ft.Icons.REFRESH_ROUNDED, on_click=lambda _: calculate_prayers())
     btn_toggle = ft.ElevatedButton("بدء المراقبة", icon=ft.Icons.PLAY_ARROW_ROUNDED, on_click=toggle_monitoring,
                                    style=ft.ButtonStyle(color=ft.Colors.WHITE, bgcolor=ft.Colors.INDIGO_600))
 
-    # القائمة الجانبية (Navigation Drawer)
     page.drawer = ft.NavigationDrawer(
         controls=[
             ft.Container(
@@ -231,17 +226,13 @@ def main(page: ft.Page):
                     ft.Icon(ft.Icons.MOSQUE, size=50, color=ft.Colors.WHITE),
                     ft.Text("سكينة - وضع الصلاة", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
                 ], alignment=ft.MainAxisAlignment.CENTER),
-                bg_color=ft.Colors.INDIGO_700,
+                bgcolor=ft.Colors.INDIGO_700,
                 padding=20,
                 height=150,
             ),
             ft.NavigationDrawerDestination(
                 icon=ft.Icons.MY_LOCATION,
                 label="تحديد الموقع تلقائياً",
-            ),
-            ft.NavigationDrawerDestination(
-                icon=ft.Icons.SETTINGS_REMOTE,
-                label="تعليمات إذن عدم الإزعاج (DND)",
             ),
             ft.Divider(),
             ft.Container(
@@ -252,16 +243,14 @@ def main(page: ft.Page):
         on_change=lambda e: auto_detect_location() if e.data == "0" else None
     )
 
-    # شريط التطبيق العلوي (AppBar)
     page.appbar = ft.AppBar(
         leading=ft.IconButton(ft.Icons.MENU, on_click=lambda _: page.open(page.drawer)),
         title=ft.Text("تطبيق ود صيام الصامت", weight=ft.FontWeight.BOLD),
-        bg_color=ft.Colors.INDIGO_700,
+        bgcolor=ft.Colors.INDIGO_700,
         color=ft.Colors.WHITE,
         center_title=True
     )
 
-    # بناء الواجهة الرئيسية
     page.add(
         ft.Container(
             padding=15,
@@ -272,7 +261,7 @@ def main(page: ft.Page):
                 location_label,
                 ft.Row([btn_calc, btn_toggle], alignment=ft.MainAxisAlignment.SPACE_EVENLY),
                 ft.SizedBox(height=5),
-                ft.Container(content=status_text, padding=10, bg_color=ft.Colors.GREY_100, border_radius=8),
+                ft.Container(content=status_text, padding=10, bgcolor=ft.Colors.GREY_100, border_radius=8),
                 ft.Text("مواقيت الصلاة لليوم:", size=16, weight=ft.FontWeight.BOLD),
                 times_list
             ], spacing=12)
