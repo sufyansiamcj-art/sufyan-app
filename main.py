@@ -161,7 +161,7 @@ def main(page: ft.Page):
                         padding=15,
                         bgcolor=ft.Colors.INDIGO_50 if is_next else ft.Colors.WHITE,
                         border_radius=12,
-                        border=ft.border.all(1, ft.Colors.INDIGO_200 if is_next else ft.Colors.GREY_200)
+                        border=ft.Border.all(1, ft.Colors.INDIGO_200 if is_next else ft.Colors.GREY_200)
                     )
                 )
             page.update()
@@ -219,7 +219,7 @@ def main(page: ft.Page):
     btn_toggle = ft.ElevatedButton("بدء المراقبة", icon=ft.Icons.PLAY_ARROW_ROUNDED, on_click=toggle_monitoring,
                                    style=ft.ButtonStyle(color=ft.Colors.WHITE, bgcolor=ft.Colors.INDIGO_600))
 
-    page.drawer = ft.NavigationDrawer(
+    my_drawer = ft.NavigationDrawer(
         controls=[
             ft.Container(
                 content=ft.Column([
@@ -242,9 +242,11 @@ def main(page: ft.Page):
         ],
         on_change=lambda e: auto_detect_location() if e.data == "0" else None
     )
+    
+    page.drawer = my_drawer
 
     page.appbar = ft.AppBar(
-        leading=ft.IconButton(ft.Icons.MENU, on_click=lambda _: page.open(page.drawer)),
+        leading=ft.IconButton(ft.Icons.MENU, on_click=lambda _: (setattr(my_drawer, 'open', True), page.update())),
         title=ft.Text("تطبيق ود صيام الصامت", weight=ft.FontWeight.BOLD),
         bgcolor=ft.Colors.INDIGO_700,
         color=ft.Colors.WHITE,
