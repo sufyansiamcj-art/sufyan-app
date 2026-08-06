@@ -51,21 +51,24 @@ def main(page: ft.Page):
     page.title = "مستكشف مشاريع GitHub - سفيان صيام"
     page.rtl = True
     page.theme_mode = ft.ThemeMode.DARK
-    page.padding = 15
+    page.padding = 10
+    page.scroll = "auto"  # تفعيل التمرير التلقائي للشاشة بالكامل للتجاوب
 
     fetched_repos_data = []
 
-    # حقول البحث والتصفية
+    # حقول البحث والتصفية المدمجة
     query_input = ft.TextField(
-        label="اسم المشروع / كلمة البحث",
-        hint_text="مثل: flet, bootstrap, calculator",
+        hint_text="بحث عن المشاريع",
+        border=ft.InputBorder.NONE,
+        focused_border=ft.InputBorder.NONE,
+        content_padding=ft.padding.symmetric(horizontal=10, vertical=0),
         expand=True,
+        text_size=14
     )
+    
     lang_input = ft.TextField(
-        label="لغة البرمجة",
         value="python",
-        hint_text="مثل: python, javascript, php",
-        width=150,
+        visible=False  # مخفي للاستخدام البرمجي أو يمكن عرضه عند الحاجة
     )
 
     repos_list = ft.ListView(expand=True, spacing=12)
@@ -76,9 +79,9 @@ def main(page: ft.Page):
     dev_progress_bar = ft.ProgressBar(visible=False)
 
     # عناصر الداشبورد
-    stat_total_repos = ft.Text("0", size=22, weight=ft.FontWeight.BOLD, color="blue400")
-    stat_total_stars = ft.Text("0", size=22, weight=ft.FontWeight.BOLD, color="amber400")
-    stat_fav_count = ft.Text("0", size=22, weight=ft.FontWeight.BOLD, color="green400")
+    stat_total_repos = ft.Text("0", size=20, weight=ft.FontWeight.BOLD, color="blue400")
+    stat_total_stars = ft.Text("0", size=20, weight=ft.FontWeight.BOLD, color="amber400")
+    stat_fav_count = ft.Text("0", size=20, weight=ft.FontWeight.BOLD, color="green400")
     
     top_repos_container = ft.Column(spacing=10, expand=True)
 
@@ -103,7 +106,6 @@ def main(page: ft.Page):
         load_favorites_tab()
         update_dashboard()
         
-        # إعادة بناء بطاقات قائمة البحث لتحديث حالة زر المفضلة
         if fetched_repos_data:
             repos_list.controls.clear()
             for r in fetched_repos_data:
@@ -178,23 +180,23 @@ def main(page: ft.Page):
         return ft.Card(
             elevation=4,
             content=ft.Container(
-                padding=15,
+                padding=12,
                 border_radius=10,
                 content=ft.Column([
                     ft.Row([
                         ft.Row([
                             ft.CircleAvatar(
                                 foreground_image_src=avatar_url,
-                                radius=16,
+                                radius=14,
                                 content=ft.Text(owner_name[0].upper() if owner_name else "?")
                             ),
-                            ft.Text(name, size=18, weight=ft.FontWeight.BOLD, color="blue400"),
+                            ft.Text(name, size=16, weight=ft.FontWeight.BOLD, color="blue400"),
                         ]),
                         ft.Text(f"⭐ {stars:,}", color="amber400", weight=ft.FontWeight.BOLD)
-                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, wrap=True),
                     
                     ft.Text(f"👤 المطور: {owner_name}  |  🍴 التفرعات: {forks:,}", size=12, color="grey400"),
-                    ft.Text(desc, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS, size=14),
+                    ft.Text(desc, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS, size=13),
                     
                     ft.Row([
                         ft.OutlinedButton(
@@ -210,17 +212,16 @@ def main(page: ft.Page):
                             "التفاصيل الكاملة",
                             on_click=lambda e, r=repo: show_repo_details(r)
                         )
-                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, wrap=True)
                 ])
             )
         )
 
-    # --- جلب وعرض مشاريع مطور معين في صفحة منفصلة ---
+    # --- جلب وعرض مشاريع مطور معين ---
     def fetch_developer_repos(owner_name):
         developer_repos_list.controls.clear()
         dev_progress_bar.visible = True
         
-        # الانتقال لصفحة استعراض مشاريع المطور
         explore_view.visible = False
         dashboard_view.visible = False
         favorites_view.visible = False
@@ -229,29 +230,21 @@ def main(page: ft.Page):
         page.update()
 
         url = f"https://api.github.com/users/{owner_name}/repos?sort=stars&per_page=20"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
+        headers = {"User-Agent": "Mozilla/5.0"}
 
         try:
             res = requests.get(url, headers=headers, timeout=15, verify=False)
             if res.status_code == 200:
                 repos = res.json()
                 if not repos:
-                    developer_repos_list.controls.append(
-                        ft.Text(f"لا توجد مشاريع عامة للمطور {owner_name}.", size=16)
-                    )
+                    developer_repos_list.controls.append(ft.Text(f"لا توجد مشاريع عامة للمطور {owner_name}.", size=16))
                 else:
                     for repo in repos:
                         developer_repos_list.controls.append(build_repo_card(repo))
             else:
-                developer_repos_list.controls.append(
-                    ft.Text(f"تعذر جلب مشاريع المطور (رمز الخطأ: {res.status_code})", color="red400")
-                )
+                developer_repos_list.controls.append(ft.Text("تعذر جلب مشاريع المطور", color="red400"))
         except Exception as err:
-            developer_repos_list.controls.append(
-                ft.Text(f"خطأ في الاتصال: {str(err)}", color="red400")
-            )
+            developer_repos_list.controls.append(ft.Text(f"خطأ في الاتصال: {str(err)}", color="red400"))
 
         dev_progress_bar.visible = False
         page.update()
@@ -259,23 +252,17 @@ def main(page: ft.Page):
     # --- شاشة التفاصيل الكاملة ---
     def show_repo_details(repo):
         name = repo.get("name", "غير معروف")
-        
         owner_data = repo.get("owner", {}) if isinstance(repo.get("owner"), dict) else {}
         owner_name = owner_data.get("login", "غير معروف")
         avatar_url = owner_data.get("avatar_url", "")
 
         stars = repo.get("stargazers_count", 0)
         forks = repo.get("forks_count", 0)
-        watchers = repo.get("watchers_count", 0)
-        issues = repo.get("open_issues_count", 0)
         language = repo.get("language") or "غير محددة"
         license_name = repo.get("license", {}).get("name") if repo.get("license") and isinstance(repo.get("license"), dict) else "بدون رخصة"
-        size_kb = repo.get("size", 0)
         default_branch = repo.get("default_branch", "main")
         
         created_at = repo.get("created_at", "")[:10] if repo.get("created_at") else "غير محدد"
-        updated_at = repo.get("updated_at", "")[:10] if repo.get("updated_at") else "غير محدد"
-        
         desc = repo.get("description") or "لا يوجد وصف متوفر لهذا المشروع."
         target_url = repo.get("html_url")
 
@@ -289,9 +276,9 @@ def main(page: ft.Page):
             fetch_developer_repos(owner_name)
 
         details_dialog = ft.AlertDialog(
-            title=ft.Text(f"التفاصيل الشاملة: {name}", weight=ft.FontWeight.BOLD),
+            title=ft.Text(f"التفاصيل: {name}", weight=ft.FontWeight.BOLD, size=16),
             content=ft.Container(
-                width=450,
+                width=400,
                 content=ft.Column([
                     ft.Container(
                         padding=10,
@@ -300,49 +287,31 @@ def main(page: ft.Page):
                         content=ft.Row([
                             ft.CircleAvatar(
                                 foreground_image_src=avatar_url,
-                                radius=28,
+                                radius=24,
                                 content=ft.Text(owner_name[0].upper() if owner_name else "?")
                             ),
                             ft.Column([
-                                ft.Text(f"👤 المطور: {owner_name}", weight=ft.FontWeight.BOLD, size=15),
-                                ft.TextButton(
-                                    "📁 استعراض كافة مشاريع المطور", 
-                                    on_click=go_to_dev_repos,
-                                    style=ft.ButtonStyle(padding=0)
-                                )
+                                ft.Text(f"👤 المطور: {owner_name}", weight=ft.FontWeight.BOLD, size=14),
+                                ft.TextButton("📁 استعراض مشاريع المطور", on_click=go_to_dev_repos, style=ft.ButtonStyle(padding=0))
                             ], spacing=2, expand=True)
                         ])
                     ),
                     ft.Divider(),
-                    
                     ft.Row([
                         ft.Text(f"⭐ النجوم: {stars:,}", color="amber400", weight=ft.FontWeight.BOLD),
                         ft.Text(f"🍴 التفرعات: {forks:,}", color="blue400", weight=ft.FontWeight.BOLD),
-                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                    
-                    ft.Row([
-                        ft.Text(f"👁️ المتابعين: {watchers:,}", color="green400"),
-                        ft.Text(f"⚠️ المشاكل المفتوحة: {issues:,}", color="red400"),
-                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                    
-                    ft.Divider(),
-                    
+                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, wrap=True),
                     ft.Text(f"💻 لغة البرمجة: {language}", size=13),
                     ft.Text(f"📜 الرخصة: {license_name}", size=13),
-                    ft.Text(f"📦 حجم المستودع: {size_kb:,} KB", size=13),
                     ft.Text(f"🌿 الفرع الرئيسي: {default_branch}", size=13),
-                    ft.Text(f"📅 تاريخ الإنشاء: {created_at}  |  🔄 آخر تحديث: {updated_at}", size=12, color="grey400"),
-                    
+                    ft.Text(f"📅 الإنشاء: {created_at}", size=12, color="grey400"),
                     ft.Divider(),
-                    ft.Text("الوصف الكامل:", weight=ft.FontWeight.BOLD),
+                    ft.Text("الوصف:", weight=ft.FontWeight.BOLD),
                     ft.Text(desc, size=13, selectable=True),
                 ], tight=True, scroll=ft.ScrollMode.AUTO)
             ),
             actions=[
-                ft.ElevatedButton(
-                    "🌐 فتح المشروع على GitHub", 
-                    on_click=lambda e: open_url(target_url)
-                ),
+                ft.ElevatedButton("🌐 فتح على GitHub", on_click=lambda e: open_url(target_url)),
                 ft.TextButton("إغلاق", on_click=close_dialog),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
@@ -352,20 +321,18 @@ def main(page: ft.Page):
         details_dialog.open = True
         page.update()
 
-    # --- تحميل قائمة المفضلة من قاعدة البيانات ---
+    # --- تحميل المفضلة ---
     def load_favorites_tab():
         fav_list.controls.clear()
         favs = get_favorites_from_db()
         if not favs:
-            fav_list.controls.append(
-                ft.Text("لا توجد مشاريع مضافة للمفضلة حالياً.", size=16)
-            )
+            fav_list.controls.append(ft.Text("لا توجد مشاريع مضافة للمفضلة حالياً.", size=16))
         else:
             for repo in favs:
                 fav_list.controls.append(build_repo_card(repo, is_fav_tab=True))
         page.update()
 
-    # --- جلب البيانات من GitHub API ---
+    # --- جلب البيانات ---
     def fetch_repos(e=None):
         nonlocal fetched_repos_data
         repos_list.controls.clear()
@@ -385,10 +352,7 @@ def main(page: ft.Page):
         encoded_query = urllib.parse.quote(full_query)
         
         url = f"https://api.github.com/search/repositories?q={encoded_query}&sort=stars&order=desc&per_page=15"
-
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
+        headers = {"User-Agent": "Mozilla/5.0"}
 
         try:
             res = requests.get(url, headers=headers, timeout=15, verify=False)
@@ -398,141 +362,79 @@ def main(page: ft.Page):
                 fetched_repos_data = items
 
                 if not items:
-                    repos_list.controls.append(
-                        ft.Text("لم يتم العثور على أي مشاريع مطابقة لخيارات البحث.", size=16)
-                    )
+                    repos_list.controls.append(ft.Text("لم يتم العثور على نتائج.", size=16))
                 else:
                     for repo in items:
                         repos_list.controls.append(build_repo_card(repo))
-            elif res.status_code == 403:
-                repos_list.controls.append(ft.Text("تجاوزت حد الطلبات المسموح به من GitHub، حاول مجدداً بعد دقيقة.", color="red400"))
             else:
-                repos_list.controls.append(ft.Text(f"خطأ في الاستجابة: {res.status_code}", color="red400"))
+                repos_list.controls.append(ft.Text("خطأ في الاتصال أو تجاوز الحد المسموح.", color="red400"))
         except Exception as err:
-            repos_list.controls.append(ft.Text(f"تفاصيل الخطأ: {str(err)}", color="red400"))
+            repos_list.controls.append(ft.Text(f"خطأ: {str(err)}", color="red400"))
 
         progress_bar.visible = False
         update_dashboard()
         page.update()
 
-    # --- تبديل الثيم الداكن/الفاتح ---
+    # --- الثيم ---
     def toggle_theme(e):
         if page.theme_mode == ft.ThemeMode.DARK:
             page.theme_mode = ft.ThemeMode.LIGHT
-            theme_btn.text = "الوضع الداكن 🌙"
+            theme_icon.icon = ft.Icons.LIGHT_MODE
         else:
             page.theme_mode = ft.ThemeMode.DARK
-            theme_btn.text = "الوضع الفاتح ☀️"
+            theme_icon.icon = ft.Icons.DARK_MODE
         page.update()
 
-    theme_btn = ft.OutlinedButton("الوضع الفاتح ☀️", on_click=toggle_theme)
-    search_btn = ft.ElevatedButton("بحث", on_click=fetch_repos)
+    theme_icon = ft.IconButton(
+        icon=ft.Icons.DARK_MODE,
+        icon_size=20,
+        tooltip="تغيير المظهر",
+        on_click=toggle_theme
+    )
 
-    # --- بناء واجهة الداشبورد (Dashboard View) ---
+    # --- واجهة الداشبورد ---
     dashboard_view = ft.Column([
         ft.Text("📈 لوحة التحكم والإحصائيات", size=18, weight=ft.FontWeight.BOLD),
         ft.Row([
-            ft.Card(
-                content=ft.Container(
-                    padding=15,
-                    content=ft.Column([
-                        ft.Text("إجمالي النتائج", size=12, color="grey400"),
-                        stat_total_repos
-                    ], alignment=ft.MainAxisAlignment.CENTER),
-                    width=110
-                )
-            ),
-            ft.Card(
-                content=ft.Container(
-                    padding=15,
-                    content=ft.Column([
-                        ft.Text("مجموع النجوم", size=12, color="grey400"),
-                        stat_total_stars
-                    ], alignment=ft.MainAxisAlignment.CENTER),
-                    width=120
-                )
-            ),
-            ft.Card(
-                content=ft.Container(
-                    padding=15,
-                    content=ft.Column([
-                        ft.Text("المفضلة", size=12, color="grey400"),
-                        stat_fav_count
-                    ], alignment=ft.MainAxisAlignment.CENTER),
-                    width=110
-                )
-            ),
-        ], alignment=ft.MainAxisAlignment.SPACE_AROUND),
+            ft.Card(content=ft.Container(padding=10, content=ft.Column([ft.Text("النتائج", size=11, color="grey400"), stat_total_repos], alignment=ft.MainAxisAlignment.CENTER), width=100)),
+            ft.Card(content=ft.Container(padding=10, content=ft.Column([ft.Text("النجوم", size=11, color="grey400"), stat_total_stars], alignment=ft.MainAxisAlignment.CENTER), width=105)),
+            ft.Card(content=ft.Container(padding=10, content=ft.Column([ft.Text("المفضلة", size=11, color="grey400"), stat_fav_count], alignment=ft.MainAxisAlignment.CENTER), width=100)),
+        ], alignment=ft.MainAxisAlignment.SPACE_AROUND, wrap=True),
         ft.Divider(),
         top_repos_container
-    ], expand=True, visible=False, scroll=ft.ScrollMode.AUTO)
+    ], expand=True, visible=False)
 
-    # --- بناء واجهة "عن التطبيق" (About View) ---
+    # --- واجهة عن التطبيق ---
     about_view = ft.Column([
         ft.Container(
-            padding=25,
+            padding=20,
             border_radius=12,
             bgcolor="grey900",
             content=ft.Column([
-                ft.Row([
-                    ft.Icon(ft.Icons.CODE, size=35, color="blue400"),
-                    ft.Text("سفيان صيام لمشاريع GitHub", size=22, weight=ft.FontWeight.BOLD, color="white"),
-                ], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row([ft.Icon(ft.Icons.CODE, size=30, color="blue400"), ft.Text("سفيان صيام لمشاريع GitHub", size=18, weight=ft.FontWeight.BOLD)], alignment=ft.MainAxisAlignment.CENTER, wrap=True),
                 ft.Divider(),
-                ft.Text(
-                    "نبذة عن المطور:",
-                    size=16,
-                    weight=ft.FontWeight.BOLD,
-                    color="amber400"
-                ),
-                ft.Text(
-                    "مطور برمجيات شغوف ببتكار وتطوير الحلول التقنية الحديثة. يمتلك رؤية إبداعية في بناء واجهات المستخدم التفاعلية، ويسعى دائماً لتطوير أدوات برمجية تسهل على المطورين الوصول إلى مشاريعهم وإدارتها بكفاءة عالية وبأفضل تجربة استخدام ممكنة.",
-                    size=14,
-                    color="grey300",
-                ),
+                ft.Text("مطور برمجيات شغوف بابتكار وتطوير الحلول التقنية الحديثة واجهات تفاعلية.", size=13, color="grey300"),
                 ft.Divider(),
-                ft.Row([
-                    ft.Icon(ft.Icons.PERSON, color="blue400"),
-                    ft.Text("المطور: سفيان إبراهيم", size=15, weight=ft.FontWeight.BOLD),
-                ]),
-                ft.Row([
-                    ft.Icon(ft.Icons.EMAIL, color="green400"),
-                    ft.Text("البريد الإلكتروني: sufyansiam.cj@gmail.com", size=15, weight=ft.FontWeight.BOLD),
-                ]),
-            ], spacing=15)
+                ft.Row([ft.Icon(ft.Icons.PERSON, color="blue400"), ft.Text("المطور: سفيان إبراهيم", size=14, weight=ft.FontWeight.BOLD)], wrap=True),
+                ft.Row([ft.Icon(ft.Icons.EMAIL, color="green400"), ft.Text("sufyansiam.cj@gmail.com", size=13, weight=ft.FontWeight.BOLD)], wrap=True),
+            ], spacing=10)
         )
     ], expand=True, visible=False, alignment=ft.MainAxisAlignment.CENTER)
 
-    # --- واجهة مشاريع المطور (Developer Repos View) ---
+    # --- واجهة مشاريع المطور ---
     def back_to_explore(e):
         developer_repos_view.visible = False
         explore_view.visible = True
         page.update()
 
     developer_repos_view = ft.Column([
-        ft.Row([
-            ft.IconButton(icon=ft.Icons.ARROW_BACK, on_click=back_to_explore, tooltip="رجوع"),
-            ft.Text("📁 مشاريع المطور", size=18, weight=ft.FontWeight.BOLD)
-        ]),
+        ft.Row([ft.IconButton(icon=ft.Icons.ARROW_BACK, on_click=back_to_explore), ft.Text("📁 مشاريع المطور", size=16, weight=ft.FontWeight.BOLD)], wrap=True),
         dev_progress_bar,
         ft.Divider(),
         developer_repos_list
     ], expand=True, visible=False)
 
-    # حاويات الواجهات الأساسية
-    explore_view = ft.Column([
-        ft.Row([query_input, lang_input, search_btn]),
-        progress_bar,
-        ft.Divider(),
-        repos_list
-    ], expand=True)
-
-    favorites_view = ft.Column([
-        ft.Divider(),
-        fav_list
-    ], expand=True, visible=False)
-
-    # التبديل بين الشاشات الرئيسية
+    # --- التبديل بين التبويبات وتغيير شكل الأزرار (أيقونات دائرية) ---
     def switch_tab(e):
         target = e.control.data
         explore_view.visible = (target == "explore")
@@ -541,24 +443,68 @@ def main(page: ft.Page):
         about_view.visible = (target == "about")
         developer_repos_view.visible = False
         
+        # تحديث ألوان وأشكال الأيقونات العلوية لتشبه التصميم المطلوب
+        for btn in [btn_dashboard, btn_fav, btn_about]:
+            if btn.data == target:
+                btn.bgcolor = "blue900"
+            else:
+                btn.bgcolor = "grey900"
+
         if target == "fav":
             load_favorites_tab()
         elif target == "dashboard":
             update_dashboard()
-            
         page.update()
 
-    btn_explore = ft.ElevatedButton("🔍 الاستكشاف", data="explore", on_click=switch_tab)
-    btn_dashboard = ft.OutlinedButton("📊 الداشبورد", data="dashboard", on_click=switch_tab)
-    btn_fav = ft.OutlinedButton("⭐ المفضلة", data="fav", on_click=switch_tab)
-    btn_about = ft.OutlinedButton("ℹ️ عن التطبيق", data="about", on_click=switch_tab)
+    btn_explore = ft.IconButton(icon=ft.Icons.EXPLORE, data="explore", on_click=switch_tab, tooltip="الاستكشاف")
+    btn_dashboard = ft.IconButton(icon=ft.Icons.DASHBOARD, data="dashboard", on_click=switch_tab, bgcolor="grey900", tooltip="الداشبورد")
+    btn_fav = ft.IconButton(icon=ft.Icons.STAR, data="fav", on_click=switch_tab, bgcolor="grey900", tooltip="المفضلة")
+    btn_about = ft.IconButton(icon=ft.Icons.INFO, data="about", on_click=switch_tab, bgcolor="grey900", tooltip="عن التطبيق")
 
+    # حاويات الواجهات الأساسية
+    explore_view = ft.Column([
+        # شريط البحث الموحد الأنيق
+        ft.Container(
+            padding=ft.padding.symmetric(horizontal=8, vertical=2),
+            border_radius=25,
+            border=ft.border.all(1, "grey700"),
+            bgcolor="grey900",
+            content=ft.Row([
+                ft.IconButton(icon=ft.Icons.SEARCH, on_click=fetch_repos, icon_size=20),
+                query_input,
+                ft.IconButton(icon=ft.Icons.FILTER_LIST, icon_size=20, tooltip="تصفية")
+            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        ),
+        progress_bar,
+        ft.Divider(),
+        repos_list
+    ], expand=True)
+
+    favorites_view = ft.Column([ft.Divider(), fav_list], expand=True, visible=False)
+
+    # الترتيب العلوي المدمج والمرتب
     page.add(
         ft.Row([
-            ft.Text("🚀 سفيان صيام لمشاريع GitHub", size=20, weight=ft.FontWeight.BOLD, expand=True),
-            theme_btn
-        ]),
-        ft.Row([btn_explore, btn_dashboard, btn_fav, btn_about], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Row([
+                ft.CircleAvatar(
+                    content=ft.Text("S", weight=ft.FontWeight.BOLD),
+                    radius=16,
+                    bgcolor="blue700"
+                ),
+                ft.Column([
+                    ft.Text("Sofyan Siam's", size=12, weight=ft.FontWeight.BOLD, color="grey400"),
+                    ft.Text("Projects", size=14, weight=ft.FontWeight.BOLD)
+                ], spacing=0)
+            ], spacing=8),
+            ft.Text("GitHub 🚀", size=16, weight=ft.FontWeight.BOLD)
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        
+        ft.Row([
+            ft.Row([btn_dashboard, btn_fav, btn_about], spacing=5),
+            theme_icon
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        
+        ft.Divider(height=10),
         explore_view,
         dashboard_view,
         favorites_view,
