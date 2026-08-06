@@ -476,10 +476,10 @@ def main(page: ft.Page):
 
     favorites_view = ft.Column([ft.Divider(), fav_list], expand=True, visible=False)
 
-    # ترتيب العناصر وتجنب استخدام الأساليب المعقدة غير المدعومة
+    # استخدام قيم رقمية مباشرة للحشوة لتجنب أي استدعاء غير مدعوم
     page.add(
         ft.Container(
-            padding=ft.padding.all(8),
+            padding=8,
             content=ft.Row([
                 ft.Row([
                     ft.CircleAvatar(
