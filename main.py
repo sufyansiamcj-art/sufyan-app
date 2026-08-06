@@ -441,7 +441,7 @@ def main(page: ft.Page):
         about_view.visible = (target == "about")
         developer_repos_view.visible = False
         
-        for btn in [btn_dashboard, btn_fav, btn_about]:
+        for btn in [btn_explore, btn_dashboard, btn_fav, btn_about]:
             if btn.data == target:
                 btn.bgcolor = "blue900"
             else:
@@ -453,12 +453,13 @@ def main(page: ft.Page):
             update_dashboard()
         page.update()
 
-    btn_explore = ft.IconButton(icon=ft.Icons.EXPLORE, data="explore", on_click=switch_tab, tooltip="الاستكشاف")
+    # أزرار التنقل موحدة في صف واحد مع إضافة زر المشاريع بلون افتراضي نشط
+    btn_explore = ft.IconButton(icon=ft.Icons.GRID_VIEW, data="explore", on_click=switch_tab, bgcolor="blue900", tooltip="المشاريع")
     btn_dashboard = ft.IconButton(icon=ft.Icons.DASHBOARD, data="dashboard", on_click=switch_tab, bgcolor="grey900", tooltip="الداشبورد")
     btn_fav = ft.IconButton(icon=ft.Icons.STAR, data="fav", on_click=switch_tab, bgcolor="grey900", tooltip="المفضلة")
     btn_about = ft.IconButton(icon=ft.Icons.INFO, data="about", on_click=switch_tab, bgcolor="grey900", tooltip="عن التطبيق")
 
-    # حاويات الواجهات الأساسية (خالية من أي دوال حدود غير مدعومة)
+    # حاويات الواجهات الأساسية
     explore_view = ft.Column([
         ft.Container(
             padding=8,
@@ -477,29 +478,32 @@ def main(page: ft.Page):
 
     favorites_view = ft.Column([ft.Divider(), fav_list], expand=True, visible=False)
 
-    # الترتيب العلوي المدمج والمرتب
+    # الترتيب العلوي مع ترك مسافة واضحة ومريحة بين العنوان والخط الفاصل
     page.add(
-        ft.Row([
-            ft.Row([
-                ft.CircleAvatar(
-                    content=ft.Text("S", weight=ft.FontWeight.BOLD),
-                    radius=16,
-                    bgcolor="blue700"
-                ),
-                ft.Column([
-                    ft.Text("Sofyan Siam's", size=12, weight=ft.FontWeight.BOLD, color="grey400"),
-                    ft.Text("Projects", size=14, weight=ft.FontWeight.BOLD)
-                ], spacing=0)
-            ], spacing=8),
-            ft.Text("GitHub 🚀", size=16, weight=ft.FontWeight.BOLD)
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        ft.Container(
+            padding=ft.padding.only(top=8, bottom=4),
+            content=ft.Row([
+                ft.Row([
+                    ft.CircleAvatar(
+                        content=ft.Text("S", weight=ft.FontWeight.BOLD),
+                        radius=16,
+                        bgcolor="blue700"
+                    ),
+                    ft.Column([
+                        ft.Text("Sofyan Siam's", size=12, weight=ft.FontWeight.BOLD, color="grey400"),
+                        ft.Text("Projects", size=14, weight=ft.FontWeight.BOLD)
+                    ], spacing=0)
+                ], spacing=8),
+                ft.Text("GitHub 🚀", size=16, weight=ft.FontWeight.BOLD)
+            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        ),
         
         ft.Row([
-            ft.Row([btn_dashboard, btn_fav, btn_about], spacing=5),
+            ft.Row([btn_explore, btn_dashboard, btn_fav, btn_about], spacing=5),
             theme_icon
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         
-        ft.Divider(height=10),
+        ft.Divider(height=15),
         explore_view,
         dashboard_view,
         favorites_view,
