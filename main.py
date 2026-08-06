@@ -56,7 +56,7 @@ def main(page: ft.Page):
 
     fetched_repos_data = []
 
-    # حقول البحث والتصفية المعدلة بدون خصائص غير مدعومة
+    # حقول البحث والتصفية المعدلة
     query_input = ft.TextField(
         hint_text="بحث عن المشاريع",
         border=ft.InputBorder.NONE,
@@ -458,12 +458,11 @@ def main(page: ft.Page):
     btn_fav = ft.IconButton(icon=ft.Icons.STAR, data="fav", on_click=switch_tab, bgcolor="grey900", tooltip="المفضلة")
     btn_about = ft.IconButton(icon=ft.Icons.INFO, data="about", on_click=switch_tab, bgcolor="grey900", tooltip="عن التطبيق")
 
-    # حاويات الواجهات الأساسية
+    # حاويات الواجهات الأساسية (خالية من أي دوال حدود غير مدعومة)
     explore_view = ft.Column([
         ft.Container(
             padding=8,
             border_radius=25,
-            border=ft.border.all(1, "grey700"),
             bgcolor="grey900",
             content=ft.Row([
                 ft.IconButton(icon=ft.Icons.SEARCH, on_click=fetch_repos, icon_size=20),
