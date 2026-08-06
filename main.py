@@ -48,7 +48,7 @@ def remove_favorite_from_db(repo_id):
 def main(page: ft.Page):
     init_db()  # تهيئة قاعدة البيانات عند بدء التشغيل
 
-    page.title = "مستكشف مشاريع GitHub - sufyan"
+    page.title = "مستكشف مشاريع GitHub - sufyan siam"
     page.rtl = True
     page.theme_mode = ft.ThemeMode.DARK
     page.padding = 10
@@ -409,11 +409,11 @@ def main(page: ft.Page):
             border_radius=12,
             bgcolor="grey900",
             content=ft.Column([
-                ft.Row([ft.Icon(ft.Icons.CODE, size=30, color="blue400"), ft.Text("سفيان صيام لمشاريع GitHub", size=18, weight=ft.FontWeight.BOLD)], alignment=ft.MainAxisAlignment.CENTER, wrap=True),
+                ft.Row([ft.Icon(ft.Icons.CODE, size=30, color="blue400"), ft.Text("مشاريع GitHub", size=18, weight=ft.FontWeight.BOLD)], alignment=ft.MainAxisAlignment.CENTER, wrap=True),
                 ft.Divider(),
                 ft.Text("مطور برمجيات شغوف بابتكار وتطوير الحلول التقنية الحديثة واجهات تفاعلية.", size=13, color="grey300"),
                 ft.Divider(),
-                ft.Row([ft.Icon(ft.Icons.PERSON, color="blue400"), ft.Text("المطور: sufyan", size=14, weight=ft.FontWeight.BOLD)], wrap=True),
+                ft.Row([ft.Icon(ft.Icons.PERSON, color="blue400"), ft.Text("المطور: سفيان ابراهيم صيام", size=14, weight=ft.FontWeight.BOLD)], wrap=True),
                 ft.Row([ft.Icon(ft.Icons.EMAIL, color="green400"), ft.Text("sufyansiam.cj@gmail.com", size=13, weight=ft.FontWeight.BOLD)], wrap=True),
             ], spacing=10)
         )
@@ -476,7 +476,7 @@ def main(page: ft.Page):
 
     favorites_view = ft.Column([ft.Divider(), fav_list], expand=True, visible=False)
 
-    # إضافة العناصر للواجهة مع تعديل الاسم إلى sufyan
+    # إعداد الواجهة مع تحديث العنوان العلوي إلى sufyan siam
     page.add(
         ft.Container(
             padding=8,
@@ -488,7 +488,7 @@ def main(page: ft.Page):
                         bgcolor="blue700"
                     ),
                     ft.Column([
-                        ft.Text("sufyan's", size=12, weight=ft.FontWeight.BOLD, color="grey400"),
+                        ft.Text("sufyan siam's", size=12, weight=ft.FontWeight.BOLD, color="grey400"),
                         ft.Text("Projects", size=14, weight=ft.FontWeight.BOLD)
                     ], spacing=0)
                 ], spacing=8),
