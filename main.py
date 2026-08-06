@@ -56,11 +56,10 @@ def main(page: ft.Page):
 
     fetched_repos_data = []
 
-    # حقول البحث والتصفية المدمجة
+    # حقول البحث والتصفية المعدلة بدون خصائص غير مدعومة
     query_input = ft.TextField(
         hint_text="بحث عن المشاريع",
         border=ft.InputBorder.NONE,
-        focused_border=ft.InputBorder.NONE,
         expand=True,
         text_size=14
     )
@@ -461,7 +460,6 @@ def main(page: ft.Page):
 
     # حاويات الواجهات الأساسية
     explore_view = ft.Column([
-        # شريط البحث الموحد الأنيق بدون استخدام ft.padding.symmetric لتلافي الخطأ
         ft.Container(
             padding=8,
             border_radius=25,
