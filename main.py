@@ -61,14 +61,13 @@ def main(page: ft.Page):
         hint_text="بحث عن المشاريع",
         border=ft.InputBorder.NONE,
         focused_border=ft.InputBorder.NONE,
-        content_padding=ft.padding.symmetric(horizontal=10, vertical=0),
         expand=True,
         text_size=14
     )
     
     lang_input = ft.TextField(
         value="python",
-        visible=False  # مخفي للاستخدام البرمجي أو يمكن عرضه عند الحاجة
+        visible=False
     )
 
     repos_list = ft.ListView(expand=True, spacing=12)
@@ -443,7 +442,6 @@ def main(page: ft.Page):
         about_view.visible = (target == "about")
         developer_repos_view.visible = False
         
-        # تحديث ألوان وأشكال الأيقونات العلوية لتشبه التصميم المطلوب
         for btn in [btn_dashboard, btn_fav, btn_about]:
             if btn.data == target:
                 btn.bgcolor = "blue900"
@@ -463,9 +461,9 @@ def main(page: ft.Page):
 
     # حاويات الواجهات الأساسية
     explore_view = ft.Column([
-        # شريط البحث الموحد الأنيق
+        # شريط البحث الموحد الأنيق بدون استخدام ft.padding.symmetric لتلافي الخطأ
         ft.Container(
-            padding=ft.padding.symmetric(horizontal=8, vertical=2),
+            padding=8,
             border_radius=25,
             border=ft.border.all(1, "grey700"),
             bgcolor="grey900",
