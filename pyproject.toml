@@ -2,12 +2,14 @@
 name = "my_flet_app"
 version = "0.1.0"
 dependencies = [
+    "flet",
     "requests",
     "adhanpy"
 ]
 
 [tool.flet.app]
 dependencies = [
+    "flet",
     "requests",
     "adhanpy"
 ]
