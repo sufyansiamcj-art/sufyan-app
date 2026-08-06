@@ -1,0 +1,13 @@
+[project]
+name = "my_flet_app"
+version = "0.1.0"
+dependencies = [
+    "requests",
+    "adhanpy"
+]
+
+[tool.flet.app]
+dependencies = [
+    "requests",
+    "adhanpy"
+]
