@@ -56,7 +56,7 @@ def main(page: ft.Page):
 
     fetched_repos_data = []
 
-    # حقول البحث والتصفية المعدلة
+    # حقول البحث والتصفية
     query_input = ft.TextField(
         hint_text="بحث عن المشاريع",
         border=ft.InputBorder.NONE,
@@ -432,7 +432,7 @@ def main(page: ft.Page):
         developer_repos_list
     ], expand=True, visible=False)
 
-    # --- التبديل بين التبويبات وتغيير شكل الأزرار (أيقونات دائرية) ---
+    # --- التبديل بين التبويبات وتغيير شكل الأزرار ---
     def switch_tab(e):
         target = e.control.data
         explore_view.visible = (target == "explore")
@@ -453,13 +453,11 @@ def main(page: ft.Page):
             update_dashboard()
         page.update()
 
-    # أزرار التنقل موحدة في صف واحد مع إضافة زر المشاريع بلون افتراضي نشط
     btn_explore = ft.IconButton(icon=ft.Icons.GRID_VIEW, data="explore", on_click=switch_tab, bgcolor="blue900", tooltip="المشاريع")
     btn_dashboard = ft.IconButton(icon=ft.Icons.DASHBOARD, data="dashboard", on_click=switch_tab, bgcolor="grey900", tooltip="الداشبورد")
     btn_fav = ft.IconButton(icon=ft.Icons.STAR, data="fav", on_click=switch_tab, bgcolor="grey900", tooltip="المفضلة")
     btn_about = ft.IconButton(icon=ft.Icons.INFO, data="about", on_click=switch_tab, bgcolor="grey900", tooltip="عن التطبيق")
 
-    # حاويات الواجهات الأساسية
     explore_view = ft.Column([
         ft.Container(
             padding=8,
@@ -478,10 +476,10 @@ def main(page: ft.Page):
 
     favorites_view = ft.Column([ft.Divider(), fav_list], expand=True, visible=False)
 
-    # الترتيب العلوي مع ترك مسافة واضحة ومريحة بين العنوان والخط الفاصل
+    # ترتيب العناصر وتجنب استخدام الأساليب المعقدة غير المدعومة
     page.add(
         ft.Container(
-            padding=ft.padding.only(top=8, bottom=4),
+            padding=ft.padding.all(8),
             content=ft.Row([
                 ft.Row([
                     ft.CircleAvatar(
